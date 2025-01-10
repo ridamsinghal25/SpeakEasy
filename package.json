@@ -23,6 +23,7 @@
     "lucide-react": "^0.469.0",
     "mongoose": "^8.9.3",
     "next": "15.1.4",
+    "openai": "^4.78.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
