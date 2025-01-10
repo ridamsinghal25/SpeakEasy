@@ -1,8 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Music } from "lucide-react";
+import { LANGUAGES } from "@/constants";
 
-export default function ResponsePage({ data }) {
+export default function AudioFormResponse({ data }) {
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
@@ -33,7 +34,9 @@ export default function ResponsePage({ data }) {
             </div>
             <div>
               <h3 className="text-lg font-medium mb-2">
-                Translation ({data?.language})
+                Translation (
+                {LANGUAGES.find(({ value }) => value === data?.language)?.label}
+                )
               </h3>
               <p className="text-sm text-gray-700">{data?.translation}</p>
             </div>
