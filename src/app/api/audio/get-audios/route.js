@@ -24,7 +24,7 @@ export async function GET() {
     // If no audios are found, return an empty array
     if (!audios.length) {
       return NextResponse.json(
-        { success: true, message: "No audios found", audios: [] },
+        { success: true, message: "No audio found", audios: [] },
         { status: 200 }
       );
     }
@@ -35,7 +35,7 @@ export async function GET() {
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error while fetching audios", error);
+    console.log("Error while fetching audios", error); // Log the error
 
     // Handle any errors that occur during the process
     return NextResponse.json(

@@ -18,8 +18,10 @@ export async function POST(request) {
   }
 
   try {
+    // Extract the text and language from the request
     const { text, language } = await request.json();
 
+    // Check if text and language are provided
     if (!text || !language) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
@@ -27,6 +29,7 @@ export async function POST(request) {
       );
     }
 
+    // Translate the text using the OpenAI API
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -49,6 +52,7 @@ export async function POST(request) {
       top_p: 1,
     });
 
+    // Check if translation was successful
     if (!response.choices[0].message.content) {
       return NextResponse.json(
         { success: false, message: "Error in translation" },
@@ -56,12 +60,13 @@ export async function POST(request) {
       );
     }
 
+    // Return the translated text
     return NextResponse.json({
       text: response.choices[0].message.content,
       response,
     });
   } catch (error) {
-    console.error("Error translating text:", error);
+    console.error("Error translating text:", error); // Log the error
     return NextResponse.json(
       { success: false, message: "Error translating text" },
       { status: 500 }

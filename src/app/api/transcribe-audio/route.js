@@ -18,9 +18,11 @@ export async function POST(request) {
   }
 
   try {
+    // Extract the file from the request
     const formData = await request.formData();
     const file = formData.get("file");
 
+    // Check if file is provided
     if (!file) {
       return NextResponse.json(
         { success: false, message: "File not found" },
@@ -28,16 +30,27 @@ export async function POST(request) {
       );
     }
 
+    // Check if file size is less than 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { success: false, message: "File size should be less than 5MB" },
+        { status: 400 }
+      );
+    }
+
+    // Transcribe the audio
     const transcription = await openai.audio.transcriptions.create({
       file: file,
       model: "whisper-1",
     });
 
+    // Translate the audio
     const translation = await openai.audio.translations.create({
       file: file,
       model: "whisper-1",
     });
 
+    // Check if transcription and translation are successful
     if (!transcription.text || !translation.text) {
       return NextResponse.json(
         { success: false, message: "Failed to transcribe or translate" },
@@ -45,7 +58,7 @@ export async function POST(request) {
       );
     }
 
-    // Return the audios
+    // Return the transcription and translation
     return NextResponse.json(
       {
         success: true,
@@ -56,7 +69,7 @@ export async function POST(request) {
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error while transcribing audios", error);
+    console.log("Error while transcribing audios", error); // Log the error
 
     // Handle any errors that occur during the process
     return NextResponse.json(

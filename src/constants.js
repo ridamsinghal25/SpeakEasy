@@ -10,6 +10,7 @@ export const ROUTES = {
   TRANSLATOR: "/translator",
 };
 
+// Languages
 export const LANGUAGES = [
   { value: "en-US", label: "English" },
   { value: "es-ES", label: "Spanish" },

@@ -28,6 +28,7 @@ export async function POST(request) {
     );
   }
 
+  // Check if Cloudinary credentials are provided
   if (
     !process.env.CLOUDINARY_CLOUD_NAME ||
     !process.env.CLOUDINARY_API_KEY ||
@@ -43,6 +44,7 @@ export async function POST(request) {
   await connectToDB();
 
   try {
+    // Extract the file and language from the request
     const formData = await request.formData();
     const file = formData.get("file");
     const language = formData.get("language");
@@ -50,6 +52,7 @@ export async function POST(request) {
     const fileType = file.type.split("/")[1];
     const fileSize = file.size;
 
+    // Check if file and language are provided
     if (!file || !language) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
@@ -57,7 +60,7 @@ export async function POST(request) {
       );
     }
 
-    // file size
+    // Check if file size is less than 5MB
     if (fileSize > 5 * 1024 * 1024) {
       return NextResponse.json(
         { success: false, message: "File size should be less than 5MB" },
@@ -65,7 +68,7 @@ export async function POST(request) {
       );
     }
 
-    // file type
+    // Check if file type is supported
     if (fileType !== "wav" && fileType !== "mp3" && fileType !== "mpeg") {
       return NextResponse.json(
         { success: false, message: "Invalid file type" },
@@ -73,11 +76,14 @@ export async function POST(request) {
       );
     }
 
+    // Convert the file to base64 using arrayBuffer()
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const base64 = buffer.toString("base64");
+
     const format = fileType === "mpeg" ? "mp3" : fileType;
 
+    // Transcribe the audio using the OpenAI API
     const response = await openai.chat.completions.create({
       model: "gpt-4o-audio-preview",
       modalities: ["text", "audio"],
@@ -102,12 +108,22 @@ export async function POST(request) {
       ],
     });
 
+    // Check if response is successful
+    if (!response) {
+      return NextResponse.json(
+        { success: false, message: "Error in processing audio" },
+        { status: 500 }
+      );
+    }
+
     //  Parse the transcript and translation
     const transcriptRaw = response?.choices[0]?.message?.audio?.transcript;
 
+    // Extract the transcription and translation using utils function
     const { transcription, translation } =
       extractTranscriptDetails(transcriptRaw);
 
+    // Check if transcription and translation are present
     if (!transcription || !translation) {
       return NextResponse.json(
         {
@@ -119,11 +135,21 @@ export async function POST(request) {
       );
     }
 
+    // Extract the Base64 audio
     const base64Audio = response?.choices[0]?.message?.audio?.data;
 
-    // // Save the Base64 audio as a `.wav` file
+    // Check if Base64 audio is present
+    if (!base64Audio) {
+      return NextResponse.json(
+        { success: false, message: "Error in audio data" },
+        { status: 500 }
+      );
+    }
+
+    // Save the Base64 audio as a `.wav` file
     const audioBuffer = Buffer.from(base64Audio, "base64");
 
+    // Upload the audio to Cloudinary using upload_stream method
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         { resource_type: "video" },
@@ -142,7 +168,7 @@ export async function POST(request) {
       );
     });
 
-    // Return the API response (transcription and translation)
+    // Store the audio file in the database
     const audioFile = await AudioFile.create({
       userId,
       dubbedAudioUrl: {
@@ -154,6 +180,7 @@ export async function POST(request) {
       language,
     });
 
+    // Check if audio file is stored
     if (!audioFile) {
       return NextResponse.json(
         { success: false, message: "Error while storing audio file" },
@@ -161,6 +188,7 @@ export async function POST(request) {
       );
     }
 
+    // Return the audio file
     return NextResponse.json(
       {
         success: true,
@@ -170,7 +198,9 @@ export async function POST(request) {
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error in send-audio API route", error);
+    console.log("Error in send-audio API route", error); // Log the error
+
+    // Return an error response
     return NextResponse.json(
       { success: false, message: "Request failed, please try again" },
       { status: 500 }
