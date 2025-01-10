@@ -82,7 +82,6 @@ export default function AudioFormContainer() {
         store: "auto", // store the file in the uploadcare storage
       });
     } catch (error) {
-      console.error("Error uploading file:", error);
       toast({
         title: "This File is not supported",
         variant: "destructive",

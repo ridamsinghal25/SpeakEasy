@@ -26,7 +26,6 @@ export default function AudioTranscriptionContainer() {
         });
       }
     } catch (error) {
-      console.error("Error:", error);
       setResult({
         transcription: "Error processing audio. Please try again.",
         translation: "Error processing audio. Please try again.",
