@@ -13,9 +13,6 @@ Input Processing:
 Required Outputs:
 - transcription: Provide the original text transcription
 - translation: Provide the translation in the target language: ${targetLanguageCode}
-- audio: Provide synthesized speech audio in the target language: ${targetLanguageCode}
-  
-- **Important:** Do not repeat any audio output of either the source or target language.
 
 Important Notes:
 - The target language will be provided as a language code (e.g., "en" for English, "hi" for Hindi, etc.)

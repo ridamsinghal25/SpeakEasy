@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { Headphones, FileAudio, AudioLines } from "lucide-react";
+import { Headphones, FileAudio, AudioLines, Mic } from "lucide-react";
 import { ROUTES } from "@/constants";
 
 export default function Navbar() {
@@ -20,24 +20,31 @@ export default function Navbar() {
             <div className="ml-10 flex justify-between items-center space-x-4">
               <Link
                 href={ROUTES.AUDIO_FORM}
+                title="Audio Form"
                 className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
               >
                 <FileAudio className="inline-block mr-1 mb-1 h-5 w-5" />
-                Audio Translation
               </Link>
               <Link
                 href={ROUTES.MY_AUDIOS}
+                title="My Audios"
                 className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
               >
                 <Headphones className="inline-block mr-1 mb-1 h-5 w-5" />
-                My Audios
               </Link>
               <Link
                 href={ROUTES.AUDIO_TRANSCRIPTION}
+                title="Audio Transcription"
                 className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
               >
                 <AudioLines className="inline-block mr-1 mb-1 h-5 w-5" />
-                Transcriptions
+              </Link>
+              <Link
+                href={ROUTES.TRANSLATOR}
+                title="Translator"
+                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
+              >
+                <Mic className="inline-block mr-1 mb-1 h-5 w-5" />
               </Link>
             </div>
           </div>
