@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller } from "react-hook-form";
-import { Music } from "lucide-react";
+import { ArrowLeft, Music } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,7 @@ export default function AudioForm({
   isUploadingAudioFile,
   isSubmitting,
   onSubmit,
+  setResponseData,
   register,
   control,
   errors,
@@ -31,7 +32,26 @@ export default function AudioForm({
   return loading ? (
     <ShimmerUI />
   ) : responseData ? (
-    <ResponsePage data={responseData} />
+    <div className="bg-gray-100 min-h-screen">
+      <div className="max-w-4xl mx-auto p-4">
+        <div className="mb-4 flex justify-between items-center">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 hover:bg-gray-200 transition-colors"
+            onClick={() => setResponseData(null)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Go Back
+          </Button>
+          {/* You can add additional actions or information here */}
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <ResponsePage data={responseData} />
+        </div>
+      </div>
+    </div>
   ) : (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md mx-auto shadow-lg">
