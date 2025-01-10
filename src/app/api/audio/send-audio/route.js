@@ -3,10 +3,13 @@ import connectToDB from "@/lib/connectToDB";
 import AudioFile from "@/models/AudioFile";
 import { auth } from "@clerk/nextjs/server";
 import { v2 as cloudinary } from "cloudinary";
-import { OPENAI_API_URL } from "@/constants";
 import { extractTranscriptDetails } from "@/utils/transcript";
-import axios from "axios";
 import { getSystemPrompt } from "@/utils/systemPrompt";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -75,15 +78,10 @@ export async function POST(request) {
     const base64 = buffer.toString("base64");
     const format = fileType === "mpeg" ? "mp3" : fileType;
 
-    // Construct the request data
-
-    const data = {
+    const response = await openai.chat.completions.create({
       model: "gpt-4o-audio-preview",
-      modalities: ["text", "audio"], // Specify output modalities (text-only for transcription and translation)
-      audio: {
-        voice: "alloy", // Optional for audio responses (omit if not generating audio output)
-        format: "wav", // Ensure the audio format matches the uploaded file
-      },
+      modalities: ["text", "audio"],
+      audio: { voice: "alloy", format: "wav" },
       messages: [
         {
           role: "system",
@@ -102,17 +100,10 @@ export async function POST(request) {
           ],
         },
       ],
-    };
-
-    const response = await axios.post(OPENAI_API_URL, data, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
     });
 
     //  Parse the transcript and translation
-    const transcriptRaw = response.data?.choices[0]?.message?.audio?.transcript;
+    const transcriptRaw = response?.choices[0]?.message?.audio?.transcript;
 
     const { transcription, translation } =
       extractTranscriptDetails(transcriptRaw);
@@ -128,7 +119,7 @@ export async function POST(request) {
       );
     }
 
-    const base64Audio = response.data?.choices[0]?.message?.audio?.data;
+    const base64Audio = response?.choices[0]?.message?.audio?.data;
 
     // // Save the Base64 audio as a `.wav` file
     const audioBuffer = Buffer.from(base64Audio, "base64");
