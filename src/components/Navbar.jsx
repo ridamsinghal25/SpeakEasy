@@ -2,17 +2,15 @@
 
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import {
-  Headphones,
-  FileAudio,
-  AudioLines,
-  Mic,
-  ListMusic,
-  Captions,
-} from "lucide-react";
+import { Headphones, AudioLines, Mic, ListMusic, Captions } from "lucide-react";
 import { ROUTES } from "@/constants";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
+
+  const isActive = (route) => pathname === route;
+
   return (
     <nav className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,30 +26,46 @@ export default function Navbar() {
               <Link
                 href={ROUTES.AUDIO_FORM}
                 title="Audio Form"
-                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  isActive(ROUTES.AUDIO_FORM)
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-blue-500"
+                }`}
               >
-                <Mic className="inline-block mr-1 mb-1 h-6 w-6" />
+                <Mic className="inline-block mb-1 h-6 w-6" />
               </Link>
               <Link
                 href={ROUTES.MY_AUDIOS}
                 title="My Audios"
-                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  isActive(ROUTES.MY_AUDIOS)
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-blue-500"
+                }`}
               >
-                <ListMusic className="inline-block mr-1 mb-1 h-6 w-6" />
+                <ListMusic className="inline-block mb-1 h-6 w-6" />
               </Link>
               <Link
                 href={ROUTES.AUDIO_TRANSCRIPTION}
                 title="Audio Transcription"
-                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  isActive(ROUTES.AUDIO_TRANSCRIPTION)
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-blue-500"
+                }`}
               >
-                <Captions className="inline-block mr-1 mb-1 h-6 w-6" />
+                <Captions className="inline-block mb-1 h-6 w-6" />
               </Link>
               <Link
                 href={ROUTES.TRANSLATOR}
                 title="Translator"
-                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  isActive(ROUTES.TRANSLATOR)
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-blue-500"
+                }`}
               >
-                <AudioLines className="inline-block mr-1 mb-1 h-6 w-6" />
+                <AudioLines className="inline-block mb-1 h-6 w-6" />
               </Link>
             </div>
           </div>
