@@ -17,7 +17,6 @@ export const LANGUAGES = [
   { value: "fr-FR", label: "French" },
   { value: "de-DE", label: "German" },
   { value: "it-IT", label: "Italian" },
-  { value: "pt-PT", label: "Portuguese" },
   { value: "ru-RU", label: "Russian" },
   { value: "zh-CN", label: "Chinese" },
   { value: "ja-JP", label: "Japanese" },
