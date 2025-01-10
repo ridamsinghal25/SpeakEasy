@@ -20,7 +20,6 @@ export default function AudioTranscriptionContainer() {
       const response = await axios.post("/api/transcribe-audio", formData);
 
       if (response?.data?.success) {
-        console.log("result", response.data);
         setResult({
           transcription: response?.data?.transcription?.text,
           translation: response?.data?.translation?.text,
