@@ -13,8 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ShimmerUI from "@/components/ShimmerUI";
-import ResponsePage from "@/components/ResponsePage";
+import AudioFormResponseShimmer from "@/components/AudioFormResponseShimmer";
+import AudioFormResponse from "@/components/AudioFormResponse";
 import { LANGUAGES } from "@/constants";
 
 export default function AudioForm({
@@ -30,7 +30,7 @@ export default function AudioForm({
   handleSubmit,
 }) {
   return loading ? (
-    <ShimmerUI />
+    <AudioFormResponseShimmer />
   ) : responseData ? (
     <div className="bg-gray-100 min-h-screen">
       <div className="max-w-4xl mx-auto p-4">
@@ -48,7 +48,7 @@ export default function AudioForm({
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
-          <ResponsePage data={responseData} />
+          <AudioFormResponse data={responseData} />
         </div>
       </div>
     </div>
