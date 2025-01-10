@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { Mic, Headphones, Languages } from "lucide-react";
+import { Headphones, FileAudio, AudioLines } from "lucide-react";
 import { ROUTES } from "@/constants";
 
 export default function Navbar() {
@@ -22,7 +22,7 @@ export default function Navbar() {
                 href={ROUTES.AUDIO_FORM}
                 className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
               >
-                <Languages className="inline-block mr-1 mb-1s h-5 w-5" />
+                <FileAudio className="inline-block mr-1 mb-1 h-5 w-5" />
                 Audio Translation
               </Link>
               <Link
@@ -31,6 +31,13 @@ export default function Navbar() {
               >
                 <Headphones className="inline-block mr-1 mb-1 h-5 w-5" />
                 My Audios
+              </Link>
+              <Link
+                href={ROUTES.AUDIO_TRANSCRIPTION}
+                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-500 transition-colors duration-200"
+              >
+                <AudioLines className="inline-block mr-1 mb-1 h-5 w-5" />
+                Transcriptions
               </Link>
             </div>
           </div>

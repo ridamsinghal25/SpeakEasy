@@ -1,14 +1,12 @@
 // MongoDB database name
 export const DB_NAME = "audio-dubbing";
 
-// OpenAI API URL
-export const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-
 // Routes
 export const ROUTES = {
   HOME: "/",
   AUDIO_FORM: "/audio-form",
   MY_AUDIOS: "/my-audios",
+  AUDIO_TRANSCRIPTION: "/audio-transcription",
 };
 
 export const LANGUAGES = [
