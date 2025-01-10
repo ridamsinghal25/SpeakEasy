@@ -111,6 +111,23 @@ export async function POST(request) {
       },
     });
 
+    //  Parse the transcript and translation
+    const transcriptRaw = response.data?.choices[0]?.message?.audio?.transcript;
+
+    const { transcription, translation } =
+      extractTranscriptDetails(transcriptRaw);
+
+    if (!transcription || !translation) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Error in transcription or translation",
+          response: response.data?.choices[0]?.message,
+        },
+        { status: 500 }
+      );
+    }
+
     const base64Audio = response.data?.choices[0]?.message?.audio?.data;
 
     // // Save the Base64 audio as a `.wav` file
@@ -133,12 +150,6 @@ export async function POST(request) {
         { status: 500 }
       );
     });
-
-    //  Parse the transcript and translation
-    const transcriptRaw = response.data?.choices[0]?.message?.audio?.transcript;
-
-    const { transcription, translation } =
-      extractTranscriptDetails(transcriptRaw);
 
     // Return the API response (transcription and translation)
     const audioFile = await AudioFile.create({

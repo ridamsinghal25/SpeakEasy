@@ -4,7 +4,7 @@ import { Music } from "lucide-react";
 
 export default function ResponsePage({ data }) {
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8">
           Audio Processing Result
@@ -20,7 +20,7 @@ export default function ResponsePage({ data }) {
             <div>
               <h3 className="text-lg font-medium mb-2">Processed Audio</h3>
               <audio
-                src={data?.dubbedAudioUrl.url}
+                src={data?.dubbedAudioUrl?.url}
                 controls
                 className="w-full mb-4"
               />

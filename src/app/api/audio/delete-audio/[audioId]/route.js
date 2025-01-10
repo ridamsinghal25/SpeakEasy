@@ -34,7 +34,7 @@ export async function DELETE(request, { params }) {
   await connectToDB();
 
   try {
-    const audioId = await params.audioId;
+    const audioId = (await params).audioId;
 
     if (!audioId) {
       return NextResponse.json(
