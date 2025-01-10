@@ -76,10 +76,20 @@ export default function AudioFormContainer() {
     }
 
     setIsUploadingAudioFile(true);
-    await uploadFile(fileData[0], {
-      publicKey: process.env.NEXT_PUBLIC_UPLOADCARE_PUBLIC_KEY, // public key
-      store: "auto", // store the file in the uploadcare storage
-    });
+    try {
+      await uploadFile(fileData[0], {
+        publicKey: process.env.NEXT_PUBLIC_UPLOADCARE_PUBLIC_KEY, // public key
+        store: "auto", // store the file in the uploadcare storage
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast({
+        title: "This File is not supported",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingAudioFile(false);
+    }
 
     setIsUploadingAudioFile(false);
   };
