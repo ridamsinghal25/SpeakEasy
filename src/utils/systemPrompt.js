@@ -14,11 +14,14 @@ Required Outputs:
 - transcription: Provide the original text transcription
 - translation: Provide the translation in the target language: ${targetLanguageCode}
 - audio: Provide synthesized speech audio in the target language: ${targetLanguageCode}
+  
+- **Important:** Do not repeat any audio output of either the source or target language.
 
 Important Notes:
 - The target language will be provided as a language code (e.g., "en" for English, "hi" for Hindi, etc.)
 - Focus on maintaining context and meaning in translation
 - Ensure natural-sounding speech synthesis in the target language
 - Preserve the speaker's tone and emotion in the translated audio
-- Handle multiple languages automatically without requiring additional input for source language specification`;
+- Handle multiple languages automatically without requiring additional input for source language specification
+-  Keep certain words for which a direct translation does not exist in ${targetLanguageCode} (e.g. "Turbo, OpenAI, token, GPT, Dall-e, Python")`;
 }

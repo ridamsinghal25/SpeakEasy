@@ -1,11 +1,12 @@
 export function extractTranscriptDetails(transcriptRaw) {
+  // Match for transcription, allowing for various formats
   const transcriptionMatch = transcriptRaw.match(
-    /(?:^|\n)?(?:-\s*)?transcription:\s*(.*?)(?=\s*(?:-\s*)?translation:|\s*\n\s*(?:-\s*)?translation:)/is
+    /(?:^|\n)?(?:-\s*)?(?:\*\*\s*)?transcription(?:\s*\*\*)?:\s*["']?(.*?)["']?\s*(?=\n\s*(?:-\s*)?(?:\*\*\s*)?translation(?:\s*\*\*)?:|\s*$)/is
   );
 
-  // Match for both hyphenated and non-hyphenated formats, until audio or end
+  // Match for translation, ensuring it does not capture audio content
   const translationMatch = transcriptRaw.match(
-    /(?:^|\n)?(?:-\s*)?translation:\s*(.*?)(?=\s*(?:-\s*)?audio:|\s*\n\s*(?:-\s*)?audio:|\s*$)/is
+    /(?:^|\n)?(?:-\s*)?(?:\*\*\s*)?translation(?:\s*\*\*)?:\s*["']?(.*?)["']?\s*(?=\n\s*(?:-\s*)?audio:|\s*$)/is
   );
 
   const transcription = (transcriptionMatch?.[1] || "").trim();
