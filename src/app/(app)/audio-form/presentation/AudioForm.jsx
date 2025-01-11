@@ -1,11 +1,10 @@
 "use client";
 
-import { Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { ArrowLeft, Music } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -16,19 +15,22 @@ import {
 import AudioFormResponseShimmer from "@/components/AudioFormResponseShimmer";
 import AudioFormResponse from "@/components/AudioFormResponse";
 import { LANGUAGES } from "@/constants";
+import NextFileUploader from "@/components/NextFileUploader";
 
 export default function AudioForm({
   loading,
   responseData,
-  isUploadingAudioFile,
   isSubmitting,
   onSubmit,
   setResponseData,
-  register,
-  control,
-  errors,
-  handleSubmit,
 }) {
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    setValue,
+  } = useForm();
+
   return loading ? (
     <AudioFormResponseShimmer />
   ) : responseData ? (
@@ -67,24 +69,18 @@ export default function AudioForm({
               <Label htmlFor="audio-file" className="text-lg font-semibold">
                 Audio File
               </Label>
-              <Input
-                id="audio-file"
-                type="file"
-                {...register("audioFile", {
-                  required: "Audio file is required",
-                  validate: (value) => {
-                    const acceptedFormats = [
-                      "audio/mp3",
-                      "audio/wav",
-                      "audio/mpeg",
-                    ];
-                    return (
-                      acceptedFormats.includes(value[0]?.type) ||
-                      "Only .mp3 and .wav files are allowed"
-                    );
-                  },
-                })}
-                accept=".mp3,.wav, .mpeg"
+              <Controller
+                name="audioFile"
+                control={control}
+                rules={{ required: "Audio file is required" }}
+                render={({ field }) => (
+                  <NextFileUploader
+                    onUploadComplete={(info) => {
+                      setValue("audioFile", info.file);
+                      field.onChange(info.file);
+                    }}
+                  />
+                )}
               />
               {errors.audioFile && (
                 <p className="text-red-500">{errors.audioFile.message}</p>
@@ -120,13 +116,9 @@ export default function AudioForm({
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition-all duration-200 ease-in-out"
-              disabled={isUploadingAudioFile || isSubmitting}
+              disabled={isSubmitting}
             >
-              {isUploadingAudioFile
-                ? "Please wait validating audio..."
-                : isSubmitting
-                ? "Submitting..."
-                : "Submit"}
+              {isSubmitting ? "Submitting..." : "Submit"}
             </Button>
           </form>
         </CardContent>
