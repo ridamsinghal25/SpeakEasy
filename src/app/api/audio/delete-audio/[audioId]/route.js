@@ -62,16 +62,27 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    // Delete the audio file from Cloudinary
-    const deletedDubbedAudio = await cloudinary.uploader.destroy(
+    const audioFilesPublicIds = [
       audio?.dubbedAudioUrl?.public_id,
+      audio?.sourceAudioUrl?.public_id,
+    ];
+
+    // Delete the audio files from Cloudinary
+    const deletedAudios = await cloudinary.api.delete_resources(
+      audioFilesPublicIds,
       {
         resource_type: "video",
       }
     );
 
+    const deletedAudiosPublicIds = Object.keys(deletedAudios.deleted);
+
+    const fileNotDeleted = audioFilesPublicIds.filter(
+      (publicId) => !deletedAudiosPublicIds.includes(publicId)
+    );
+
     // Check if the audio file was successfully deleted from Cloudinary
-    if (!deletedDubbedAudio || deletedDubbedAudio.result === "not found") {
+    if (fileNotDeleted.length) {
       return NextResponse.json(
         { success: false, message: "Failed to delete audio file" },
         { status: 500 }

@@ -2,19 +2,12 @@ import { NextResponse } from "next/server";
 import connectToDB from "@/lib/connectToDB";
 import AudioFile from "@/models/AudioFile";
 import { auth } from "@clerk/nextjs/server";
-import { v2 as cloudinary } from "cloudinary";
-import { extractTranscriptDetails } from "@/utils/transcript";
 import { getSystemPrompt } from "@/utils/systemPrompt";
 import OpenAI from "openai";
+import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-});
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export async function POST(request) {
@@ -76,12 +69,19 @@ export async function POST(request) {
       );
     }
 
-    // Convert the file to base64 using arrayBuffer()
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const base64 = buffer.toString("base64");
+    // Transcribe the audio
+    const inputAudioTranscription = await openai.audio.transcriptions.create({
+      file: file,
+      model: "whisper-1",
+    });
 
-    const format = fileType === "mpeg" ? "mp3" : fileType;
+    // Check if transcription is successful
+    if (!inputAudioTranscription) {
+      return NextResponse.json(
+        { success: false, message: "Error in processing audio" },
+        { status: 500 }
+      );
+    }
 
     // Transcribe the audio using the OpenAI API
     const response = await openai.chat.completions.create({
@@ -95,15 +95,7 @@ export async function POST(request) {
         },
         {
           role: "user",
-          content: [
-            {
-              type: "input_audio",
-              input_audio: {
-                data: base64,
-                format: format, // Ensure the audio format is correct
-              },
-            },
-          ],
+          content: inputAudioTranscription.text,
         },
       ],
     });
@@ -116,67 +108,67 @@ export async function POST(request) {
       );
     }
 
-    //  Parse the transcript and translation
-    const transcriptRaw = response?.choices[0]?.message?.audio?.transcript;
+    // Extract the translation
+    const outputAudioTranslation =
+      response?.choices[0]?.message?.audio?.transcript;
 
-    // Extract the transcription and translation using utils function
-    const { transcription, translation } =
-      extractTranscriptDetails(transcriptRaw);
-
-    // Check if transcription and translation are present
-    if (!transcription || !translation) {
+    // Check if translation are present
+    if (!outputAudioTranslation) {
       return NextResponse.json(
         {
           success: false,
           message: "Error in transcription or translation",
-          response: response.data?.choices[0]?.message,
         },
         { status: 500 }
       );
     }
 
+    // Convert the input audio file to base64 using arrayBuffer()
+    const bytes = await file.arrayBuffer();
+    const inputAudiobuffer = Buffer.from(bytes);
+
     // Extract the Base64 audio
-    const base64Audio = response?.choices[0]?.message?.audio?.data;
+    const outputAudioBase64Code = response?.choices[0]?.message?.audio?.data;
 
     // Check if Base64 audio is present
-    if (!base64Audio) {
+    if (!outputAudioBase64Code) {
       return NextResponse.json(
         { success: false, message: "Error in audio data" },
         { status: 500 }
       );
     }
 
-    // Save the Base64 audio as a `.wav` file
-    const audioBuffer = Buffer.from(base64Audio, "base64");
+    // Create the output audio buffer
+    const outputAudioBuffer = Buffer.from(outputAudioBase64Code, "base64");
 
-    // Upload the audio to Cloudinary using upload_stream method
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { resource_type: "video" },
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else resolve(result);
-        }
-      );
-      uploadStream.end(audioBuffer);
-    }).catch((error) => {
-      console.log("Error in uploading audio to cloudinary", error.message);
+    const [sourceAudio, dubbedAudio] = await Promise.all([
+      uploadToCloudinary(inputAudiobuffer, "video"),
+      uploadToCloudinary(outputAudioBuffer, "video"),
+    ]);
+
+    if (!sourceAudio.public_id || !dubbedAudio.public_id) {
       return NextResponse.json(
-        { error: "Error in uploading audio to cloudinary" },
+        {
+          success: false,
+          message: "Error while uploading audio to cloudinary",
+        },
         { status: 500 }
       );
-    });
+    }
 
     // Store the audio file in the database
     const audioFile = await AudioFile.create({
       userId,
-      dubbedAudioUrl: {
-        public_id: result.public_id,
-        url: result.secure_url,
+      sourceAudioUrl: {
+        public_id: sourceAudio.public_id,
+        url: sourceAudio.secure_url,
       },
-      transcription,
-      translation,
+      dubbedAudioUrl: {
+        public_id: dubbedAudio.public_id,
+        url: dubbedAudio.secure_url,
+      },
+      transcription: inputAudioTranscription.text,
+      translation: outputAudioTranslation,
       language,
     });
 

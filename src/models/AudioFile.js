@@ -6,6 +6,16 @@ const audioFileSchema = new mongoose.Schema(
       type: String,
       required: [true, "User ID is required"],
     },
+    sourceAudioUrl: {
+      public_id: {
+        type: String,
+        default: "",
+      },
+      url: {
+        type: String,
+        default: "",
+      },
+    },
     dubbedAudioUrl: {
       public_id: {
         type: String,
