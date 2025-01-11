@@ -88,6 +88,13 @@ export default function MyAudios({
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                 <div>
+                  <h3 className="font-semibold mb-2">Source Audio</h3>
+                  <audio
+                    src={audio?.sourceAudioUrl?.url}
+                    controls
+                    className="w-full mb-2"
+                  />
+                  <h3 className="font-semibold mb-2">Dubbed Audio</h3>
                   <audio
                     src={audio?.dubbedAudioUrl?.url}
                     controls
@@ -108,13 +115,13 @@ export default function MyAudios({
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">Transcription</h3>
-                  <p className="text-sm text-gray-700 line-clamp-5">
+                  <p className="text-sm text-gray-700 line-clamp-7">
                     {audio?.transcription}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">Translation</h3>
-                  <p className="text-sm text-gray-700 line-clamp-5">
+                  <p className="text-sm text-gray-700 line-clamp-7">
                     {audio?.translation}
                   </p>
                 </div>

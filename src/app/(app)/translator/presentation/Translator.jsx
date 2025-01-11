@@ -45,7 +45,7 @@ export default function Translator({
               {isActive ? "Recording" : "Not recording"}
             </span>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-4">
             <Select value={language} onValueChange={setLanguage}>
               <SelectTrigger>
                 <SelectValue placeholder="Select language" />
